@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adventure Planner - Compass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* === RESET & BASE STYLES === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      /* Adjusted body background to blue gradient */
+      background: linear-gradient(120deg, #e0f2f7 0%, #bbdefb 100%); /* Light blue to sky blue */
+      min-height: 100vh;
+      color: #1a237e; /* Darker blue for text */
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('https://www.transparenttextures.com/patterns/cubes.png');
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    :root {
+      /* Shades of blue for primary, secondary, and accent */
+      --primary: #2196f3; /* A vibrant blue */
+      --secondary: #03a9f4; /* A lighter, bright blue */
+      --accent: #90caf9; /* A even lighter blue, for subtle highlights */
+      --bg-glass: rgba(227, 242, 253, 0.72); /* Light blue tint with transparency */
+      --shadow: 0 8px 32px rgba(33, 150, 243, 0.13); /* Shadow with blue tint */
+      --radius: 18px;
+    }
+
+    /* Navigation */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: var(--bg-glass);
+      box-shadow: 0 8px 24px rgba(33, 150, 243, 0.08); /* Blue tinted shadow */
+      backdrop-filter: blur(14px);
+      border-radius: 0 0 var(--radius) var(--radius);
+      margin-bottom: 32px;
+      width: 100%;
+    }
+
+    .header-logo-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .header-logo {
+      position: relative;
+      height: 36px;
+      width: 36px;
+      overflow: hidden;
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(3, 169, 244, 0.4); /* Blue tinted shadow */
+      background: #fff;
+      animation: none;
+      transition: transform 0.2s;
+    }
+
+    .header-logo.animated-logo {
+      animation: logo-spin 2s linear infinite paused;
+    }
+
+    .header-logo.animated-logo:hover {
+      animation-play-state: running;
+      transform: scale(1.07) rotate(-4deg);
+    }
+
+    @keyframes logo-spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    .logo-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.1rem;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #fff;
+      /* Gradient with shades of blue */
+      background: linear-gradient(90deg, #0288d1 0%, #2196f3 100%); /* Darker blue to vibrant blue */
+      padding: 10px 26px;
+      border-radius: 13px;
+      font-size: 1.05rem;
+      box-shadow: 0 2px 10px rgba(33, 150, 243, 0.1); /* Blue tinted shadow */
+      transition: all 0.25s;
+      user-select: none;
+      border: none;
+      outline: none;
+      display: inline-block;
+    }
+
+    .nav-link:hover, .nav-link:focus {
+      /* Reversed gradient on hover */
+      background: linear-gradient(90deg, #2196f3 0%, #0288d1 100%);
+      color: #fff;
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3); /* Stronger blue tinted shadow */
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto 48px auto;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      padding: 48px 24px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 40px;
+      width: 100%;
+    }
+
+    .hero-circle-1 {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      background: rgba(33, 150, 243, 0.15); /* Blue tinted circle */
+      border-radius: 50%;
+      top: -50px;
+      left: -50px;
+      filter: blur(50px);
+      z-index: -1;
+    }
+
+    .hero-circle-2 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(3, 169, 244, 0.15); /* Lighter blue tinted circle */
+      border-radius: 50%;
+      bottom: -80px;
+      right: -80px;
+      filter: blur(60px);
+      z-index: -1;
+    }
+
+    .hero-title {
+      position: relative;
+      display: inline-block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 4rem;
+      font-weight: 800;
+      /* Blue gradient for title */
+      background: linear-gradient(90deg, #0d47a1 0%, #1976d2 50%, #2196f3 100%); /* Dark to vibrant blue */
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .hero-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      width: 75%;
+      margin: 0 auto;
+      /* Blue gradient for underline */
+      background: linear-gradient(90deg, #03a9f4 0%, #2196f3 100%);
+      border-radius: 4px;
+      transform: scaleX(0.8);
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      color: #263238; /* Dark blue-grey for description */
+      margin-bottom: 32px;
+      line-height: 1.6;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Form Container */
+    .form-container {
+      color: white;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius);
+      box-shadow: 0 0px 30px rgba(33, 149, 243, 0.6); /* Strong blue shadow */
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      border: 1px solid rgba(144, 202, 249, 0.3); /* Lighter blue border */
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Image Box (replacing map) */
+    .image-box {
+      width: 100%;
+      height: 300px; /* Adjust height as needed */
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      background-image: url('./images/os.jpg'); /* Your image URL */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      /* Removed display: flex, align-items, justify-content, color, font-size, font-weight, text-shadow */
+    }
+
+
+    .form-card {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .form-card-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-card-content label {
+      font-weight: 600;
+      color: #1a237e; /* Dark blue for labels */
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-card-content input[type="text"],
+    .form-card-content input[type="date"],
+    .form-card-content textarea,
+    .form-card-content select { /* Added select for styling */
+      padding: 12px 16px;
+      border: 1px solid #90caf9; /* Light blue border */
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #1a237e; /* Dark blue for input text */
+      background-color: #e3f2fd; /* Very light blue background */
+      transition: all 0.2s;
+    }
+
+    .form-card-content input[type="text"]:focus,
+    .form-card-content input[type="date"]:focus,
+    .form-card-content textarea:focus,
+    .form-card-content select:focus { /* Added select for styling */
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2); /* Blue tinted focus shadow */
+    }
+
+    .form-card-content textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: #263238; /* Dark blue-grey for checkbox labels */
+      cursor: pointer;
+      margin-bottom: 0; /* Override default label margin */
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--primary);
+      border-radius: 5px;
+      background-color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .checkbox-group input[type="checkbox"]::before {
+      content: '✓';
+      font-size: 1.2em;
+      color: white;
+      transform: scale(0);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .checkbox-group input[type="checkbox"]:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .checkbox-group input[type="checkbox"]:checked::before {
+      transform: scale(1);
+    }
+
+    .submit-button {
+      display: block;
+      width: 100%;
+      padding: 15px 25px;
+      /* Blue gradient for submit button */
+      background: linear-gradient(90deg, #0288d1 0%, #2196f3 100%);
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2); /* Blue tinted shadow */
+    }
+
+    .submit-button:hover {
+      /* Reversed blue gradient on hover */
+      background: linear-gradient(90deg, #2196f3 0%, #0288d1 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3); /* Stronger blue tinted shadow */
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .top-nav {
+        padding: 16px 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .nav-links {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .main-content {
+        padding: 0 12px;
+      }
+      .hero-title {
+        font-size: 3rem;
+      }
+      .form-container {
+        padding: 24px;
+      }
+      .image-box {
+        height: 200px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      .hero-description {
+        font-size: 0.9rem;
+      }
+      .form-container {
+        padding: 20px;
+      }
+      .image-box {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html" class="header-logo-link">
+      <img src="icon.png" alt="Compass Logo" class="header-logo animated-logo" />
+      <span class="logo-text"></span>
+    </a>
+    <div class="nav-links">
+      <a href="travelog.html" class="nav-link">Travelogs</a>
+      <a href="destination.html" class="nav-link">Destinations</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="hero-circle-1"></div>
+    <div class="hero-circle-2"></div>
+
+    <h1 class="hero-title">Plan Your <span class="hero-title-accent">Adventure</span></h1>
+    <p class="hero-description">Input your desired destination and activities below!</p>
+
+    <form class="form-container" id="trip-form" action="travelog.html" method="POST">
+      <div class="image-box"></div>
+
+      <div class="form-card">
+        <div class="form-card-content">
+          <label for="country">Country:</label>
+          <select id="country" name="country" required>
+            <option value="">-- Select a Country --</option>
+            <!-- Static country options (copied from PHP array) -->
+            <option value="Afghanistan">Afghanistan</option>
+            <option value="Albania">Albania</option>
+            <option value="Algeria">Algeria</option>
+            <option value="Andorra">Andorra</option>
+            <option value="Angola">Angola</option>
+            <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Armenia">Armenia</option>
+            <option value="Australia">Australia</option>
+            <option value="Austria">Austria</option>
+            <option value="Azerbaijan">Azerbaijan</option>
+            <option value="Bahamas">Bahamas</option>
+            <option value="Bahrain">Bahrain</option>
+            <option value="Bangladesh">Bangladesh</option>
+            <option value="Barbados">Barbados</option>
+            <option value="Belarus">Belarus</option>
+            <option value="Belgium">Belgium</option>
+            <option value="Belize">Belize</option>
+            <option value="Benin">Benin</option>
+            <option value="Bhutan">Bhutan</option>
+            <option value="Bolivia (Plurinational State of)">Bolivia (Plurinational State of)</option>
+            <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+            <option value="Botswana">Botswana</option>
+            <option value="Brazil">Brazil</option>
+            <option value="Brunei Darussalam">Brunei Darussalam</option>
+            <option value="Bulgaria">Bulgaria</option>
+            <option value="Burkina Faso">Burkina Faso</option>
+            <option value="Burundi">Burundi</option>
+            <option value="Cabo Verde">Cabo Verde</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Cameroon">Cameroon</option>
+            <option value="Canada">Canada</option>
+            <option value="Central African Republic">Central African Republic</option>
+            <option value="Chad">Chad</option>
+            <option value="Chile">Chile</option>
+            <option value="China">China</option>
+            <option value="Colombia">Colombia</option>
+            <option value="Comoros">Comoros</option>
+            <option value="Congo (Democratic Republic of the)">Congo (Democratic Republic of the)</option>
+            <option value="Congo">Congo</option>
+            <option value="Costa Rica">Costa Rica</option>
+            <option value="Croatia">Croatia</option>
+            <option value="Cuba">Cuba</option>
+            <option value="Cyprus">Cyprus</option>
+            <option value="Czechia">Czechia</option>
+            <option value="Denmark">Denmark</option>
+            <option value="Djibouti">Djibouti</option>
+            <option value="Dominica">Dominica</option>
+            <option value="Dominican Republic">Dominican Republic</option>
+            <option value="Ecuador">Ecuador</option>
+            <option value="Egypt">Egypt</option>
+            <option value="El Salvador">El Salvador</option>
+            <option value="Equatorial Guinea">Equatorial Guinea</option>
+            <option value="Eritrea">Eritrea</option>
+            <option value="Estonia">Estonia</option>
+            <option value="Eswatini">Eswatini</option>
+            <option value="Ethiopia">Ethiopia</option>
+            <option value="Fiji">Fiji</option>
+            <option value="Finland">Finland</option>
+            <option value="France">France</option>
+            <option value="Gabon">Gabon</option>
+            <option value="Gambia">Gambia</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Germany">Germany</option>
+            <option value="Ghana">Ghana</option>
+            <option value="Greece">Greece</option>
+            <option value="Grenada">Grenada</option>
+            <option value="Guatemala">Guatemala</option>
+            <option value="Guinea">Guinea</option>
+            <option value="Guinea-Bissau">Guinea-Bissau</option>
+            <option value="Guyana">Guyana</option>
+            <option value="Haiti">Haiti</option>
+            <option value="Honduras">Honduras</option>
+            <option value="Hungary">Hungary</option>
+            <option value="Iceland">Iceland</option>
+            <option value="India">India</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Iran (Islamic Republic of)">Iran (Islamic Republic of)</option>
+            <option value="Iraq">Iraq</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Israel">Israel</option>
+            <option value="Italy">Italy</option>
+            <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+            <option value="Jamaica">Jamaica</option>
+            <option value="Japan">Japan</option>
+            <option value="Jordan">Jordan</option>
+            <option value="Kazakhstan">Kazakhstan</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Kiribati">Kiribati</option>
+            <option value="Korea (Democratic People's Republic of)">Korea (Democratic People's Republic of)</option>
+            <option value="Korea (Republic of)">Korea (Republic of)</option>
+            <option value="Kuwait">Kuwait</option>
+            <option value="Kyrgyzstan">Kyrgyzstan</option>
+            <option value="Lao People's Democratic Republic">Lao People's Democratic Republic</option>
+            <option value="Latvia">Latvia</option>
+            <option value="Lebanon">Lebanon</option>
+            <option value="Lesotho">Lesotho</option>
+            <option value="Liberia">Liberia</option>
+            <option value="Libya">Libya</option>
+            <option value="Liechtenstein">Liechtenstein</option>
+            <option value="Lithuania">Lithuania</option>
+            <option value="Luxembourg">Luxembourg</option>
+            <option value="Madagascar">Madagascar</option>
+            <option value="Malawi">Malawi</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Maldives">Maldives</option>
+            <option value="Mali">Mali</option>
+            <option value="Malta">Malta</option>
+            <option value="Marshall Islands">Marshall Islands</option>
+            <option value="Mauritania">Mauritania</option>
+            <option value="Mauritius">Mauritius</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Micronesia (Federated States of)">Micronesia (Federated States of)</option>
+            <option value="Moldova (Republic of)">Moldova (Republic of)</option>
+            <option value="Monaco">Monaco</option>
+            <option value="Mongolia">Mongolia</option>
+            <option value="Montenegro">Montenegro</option>
+            <option value="Morocco">Morocco</option>
+            <option value="Mozambique">Mozambique</option>
+            <option value="Myanmar">Myanmar</option>
+            <option value="Namibia">Namibia</option>
+            <option value="Nauru">Nauru</option>
+            <option value="Nepal">Nepal</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Nicaragua">Nicaragua</option>
+            <option value="Niger">Niger</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="North Macedonia">North Macedonia</option>
+            <option value="Norway">Norway</option>
+            <option value="Oman">Oman</option>
+            <option value="Pakistan">Pakistan</option>
+            <option value="Palau">Palau</option>
+            <option value="Panama">Panama</option>
+            <option value="Papua New Guinea">Papua New Guinea</option>
+            <option value="Paraguay">Paraguay</option>
+            <option value="Peru">Peru</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Poland">Poland</option>
+            <option value="Portugal">Portugal</option>
+            <option value="Qatar">Qatar</option>
+            <option value="Romania">Romania</option>
+            <option value="Russian Federation">Russian Federation</option>
+            <option value="Rwanda">Rwanda</option>
+            <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+            <option value="Saint Lucia">Saint Lucia</option>
+            <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+            <option value="Samoa">Samoa</option>
+            <option value="San Marino">San Marino</option>
+            <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+            <option value="Saudi Arabia">Saudi Arabia</option>
+            <option value="Senegal">Senegal</option>
+            <option value="Serbia">Serbia</option>
+            <option value="Seychelles">Seychelles</option>
+            <option value="Sierra Leone">Sierra Leone</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Slovakia">Slovakia</option>
+            <option value="Slovenia">Slovenia</option>
+            <option value="Solomon Islands">Solomon Islands</option>
+            <option value="Somalia">Somalia</option>
+            <option value="South Africa">South Africa</option>
+            <option value="South Sudan">South Sudan</option>
+            <option value="Spain">Spain</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Sudan">Sudan</option>
+            <option value="Suriname">Suriname</option>
+            <option value="Sweden">Sweden</option>
+            <option value="Switzerland">Switzerland</option>
+            <option value="Syrian Arab Republic">Syrian Arab Republic</option>
+            <option value="Tajikistan">Tajikistan</option>
+            <option value="Tanzania, United Republic of">Tanzania, United Republic of</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Timor-Leste">Timor-Leste</option>
+            <option value="Togo">Togo</option>
+            <option value="Tonga">Tonga</option>
+            <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+            <option value="Tunisia">Tunisia</option>
+            <option value="Turkey">Turkey</option>
+            <option value="Turkmenistan">Turkmenistan</option>
+            <option value="Tuvalu">Tuvalu</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Ukraine">Ukraine</option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="United Kingdom of Great Britain and Northern Ireland">United Kingdom of Great Britain and Northern Ireland</option>
+            <option value="United States of America">United States of America</option>
+            <option value="Uruguay">Uruguay</option>
+            <option value="Uzbekistan">Uzbekistan</option>
+            <option value="Vanuatu">Vanuatu</option>
+            <option value="Venezuela (Bolivarian Republic of)">Venezuela (Bolivarian Republic of)</option>
+            <option value="Viet Nam">Viet Nam</option>
+            <option value="Yemen">Yemen</option>
+            <option value="Zambia">Zambia</option>
+            <option value="Zimbabwe">Zimbabwe</option>
+          </select>
+        </div>
+        <div class="form-card-content">
+          <label for="city">Destination City:</label>
+          <input type="text" id="city" name="city" placeholder="e.g., Tokyo" required />
+        </div>
+        <div class="form-card-content">
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div class="form-card-content">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+        <div class="form-card-content">
+            <label for="budget">Budget (USD):</label>
+            <input type="text" id="budget" name="budget" placeholder="e.g., 1000-2000" required>
+        </div>
+        <div class="form-card-content">
+            <label for="travelers">Number of Travelers:</label>
+            <input type="text" id="travelers" name="travelers" placeholder="e.g., 2" required>
+        </div>
+        <div class="form-card-content">
+            <label for="additional_notes">Additional Notes/Requests:</label>
+            <textarea id="additional_notes" name="additional_notes" placeholder="e.g., I would like a guided tour and a hotel with an ocean view."></textarea>
+        </div>
+
+        <div class="form-card-content">
+          <label>Activities:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="activities[]" value="Hiking"> Hiking</label>
+            <label><input type="checkbox" name="activities[]" value="Swimming"> Swimming</label>
+            <label><input type="checkbox" name="activities[]" value="Sightseeing"> Sightseeing</label>
+            <label><input type="checkbox" name="activities[]" value="Mountain Biking"> Mountain Biking</label>
+            <label><input type="checkbox" name="activities[]" value="Kayaking"> Kayaking</label>
+            <label><input type="checkbox" name="activities[]" value="Skiing"> Skiing</label>
+            <label><input type="checkbox" name="activities[]" value="Fishing"> Fishing</label>
+            <label><input type="checkbox" name="activities[]" value="Surfing"> Surfing</label>
+          </div>
+        </div>
+        <div class="form-card-content">
+          <label>Info Preferences:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="info[]" value="Transportation"> Transportation</label>
+            <label><input type="checkbox" name="info[]" value="Health"> Health</label>
+            <label><input type="checkbox" name="info[]" value="Weather"> Weather</label>
+            <label><input type="checkbox" name="info[]" value="Gear"> Gear</label>
+            <label><input type="checkbox" name="info[]" value="Political Info"> Political Info</label>
+            <label><input type="checkbox" name="info[]" value="Activity Specific"> Activity Specific</label>
+          </div>
+        </div>
+
+        <div class="form-card-content">
+          <button type="submit" class="submit-button">Submit Plan</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Form validation (remains the same as before)
+      const form = document.querySelector('.form-container');
+      form.addEventListener('submit', function(e) {
+        const city = document.getElementById('city').value;
+        const country = document.getElementById('country').value;
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const budget = document.getElementById('budget').value;
+        const travelers = document.getElementById('travelers').value;
+
+        if (!city || !country) {
+          alert('Please fill in both city and country fields.');
+          e.preventDefault();
+          return;
+        }
+
+        // Check if start date is before end date
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          
+          if (start > end) {
+            alert('Start date must be before end date.');
+            e.preventDefault();
+            return;
+          }
+        }
+      });
+
+      // Trip logging to localStorage
+      const tripForm = document.getElementById('trip-form');
+      tripForm.addEventListener('submit', function(e) {
+        // Prevent default form submission
+        e.preventDefault();
+
+        // Gather form data
+        const country = document.getElementById('country').value;
+        const city = document.getElementById('city').value;
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+        const budget = document.getElementById('budget').value;
+        const travelers = document.getElementById('travelers').value;
+        const additionalNotes = document.getElementById('additional_notes').value;
+
+        // Activities
+        const activities = Array.from(tripForm.querySelectorAll('input[name="activities[]"]:checked')).map(cb => cb.value);
+        // Info Preferences
+        const info = Array.from(tripForm.querySelectorAll('input[name="info[]"]:checked')).map(cb => cb.value);
+
+        // Validation (reuse existing)
+        if (!city || !country) {
+          alert('Please fill in both city and country fields.');
+          return;
+        }
+        if (startDate && endDate) {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          if (start > end) {
+            alert('Start date must be before end date.');
+            return;
+          }
+        }
+
+        // Prepare trip object
+        const trip = {
+          id: Date.now(), // unique id
+          country,
+          city,
+          startDate,
+          endDate,
+          budget,
+          travelers,
+          additionalNotes,
+          activities,
+          info,
+          submissionDate: new Date().toISOString()
+        };
+
+        // Get existing trips from localStorage
+        let trips = [];
+        try {
+          trips = JSON.parse(localStorage.getItem('userTrips')) || [];
+        } catch (err) {
+          trips = [];
+        }
+        trips.push(trip);
+        localStorage.setItem('userTrips', JSON.stringify(trips));
+
+        // Redirect to Travelog.html
+        window.location.href = "travelog.html";
+      });
+    });
+  </script>
+</body>
+</html>
